@@ -34,25 +34,31 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let mut initval = 50i64;
-    let mut resutl = 0u64;
+    let mut cur_val = 50i64;
+    let mut result = 0u64;
 
     for line in input.lines() {
-        let value = parse_line(line);
+        let step = parse_line(line);
         
-        let prevval = initval;
-        initval += value;
+        let full_cycles = step.unsigned_abs() / 100;
+        result += full_cycles;
 
-        resutl += value.unsigned_abs() / 100;
+        let remainder = step % 100;
 
-        if value % 100 != 0 {
-            if prevval % 100 != 0 && (prevval / 100 != initval / 100 ||  prevval.signum() != initval.signum()) {
-                resutl += 1;
-            }
+        let prevval = cur_val;
+        cur_val += remainder;
+
+        if cur_val < 0 {
+            cur_val += 100;
+        } else {
+            cur_val %= 100;
         }
 
+        if prevval != 0 && ( remainder != 0 && cur_val % 100 == 0 || remainder > 0 && cur_val < prevval || remainder < 0 && cur_val > prevval ) {
+            result += 1;
+        }
     }
-    Some(resutl)
+    Some(result)
 }
 
 #[cfg(test)]
